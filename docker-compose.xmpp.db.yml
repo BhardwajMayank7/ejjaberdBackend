@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+
+  #####################################
+  ## Service Name: Ejabberd Database ##
+  #####################################
+  chat-archive:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CHAT_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${CHAT_MYSQL_DATABASE}
+      MYSQL_USER: ${CHAT_MYSQL_USER}
+      MYSQL_PASSWORD: ${CHAT_MYSQL_PASSWORD}
+    networks:
+      - network
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./chat-archive:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+
+  chat-archive-browser:
+    image: adminer
+    container_name: chat-archive-browser
+    restart: always
+    networks:
+      - network
+    environment:
+      ADMINER_DEFAULT_SERVER: chat-archive
+    ports:
+      - 9093:8080
+    depends_on:
+      chat-archive:
+        condition: service_healthy
+
+networks:
+  network:
+    driver: bridge

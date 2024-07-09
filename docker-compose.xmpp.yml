@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  #####################################
+  ## Service Name: Ejabberd XMPP  01 ##
+  #####################################
+  comm01:
+    image: ejabberd/ecs
+    container_name: comm01
+    restart: always
+    ports:
+      - 5280:5280 
+      - 5222:5222
+      - 0.0.0.0:5443:5443
+    environment:
+      ERLANG_COOKIE: ${ERLANG_COOKIE}
+    volumes: 
+      - ./comm01/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml
+      - ./comm01/ejabberdctl.cfg:/home/ejabberd/conf/ejabberdctl.cfg
+      - ./comm01/docker-modules:/home/ejabberd/.ejabberd-modules/ 
+    networks:
+      - network
+#    depends_on:
+#      chat-archive:
+#        condition: service_healthy
+    extra_hosts:
+      - "push.haply.in:192.168.68.101"
+      - "comm01:127.0.0.1"
+
+  #####################################
+  ## Service Name: Ejabberd XMPP  02 ##
+  #####################################
+  comm02:
+    image: ejabberd/ecs
+    container_name: comm02
+    restart: always
+    ports:
+      - 5281:5280 
+      - 5223:5222
+      - 0.0.0.0:5444:5443
+    environment:
+      ERLANG_COOKIE: ${ERLANG_COOKIE}
+    volumes: 
+      - ./comm02/ejabberd.yml:/home/ejabberd/conf/ejabberd.yml
+      - ./comm02/ejabberdctl.cfg:/home/ejabberd/conf/ejabberdctl.cfg
+      - ./comm02/docker-modules:/home/ejabberd/.ejabberd-modules/
+    networks:
+      - network
+#    depends_on:
+#      chat-archive:
+#        condition: service_healthy
+    extra_hosts:
+      - "push.haply.in:192.168.68.101"
+      - "comm02:127.0.0.1"
+      
+networks:
+  network:
+    driver: bridge

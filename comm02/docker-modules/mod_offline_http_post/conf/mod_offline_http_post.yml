@@ -1,0 +1,5 @@
+modules:
+   mod_offline_http_post:
+    auth_token: "secret"
+    post_url: "http://push.haply.in/offline/notification"
+    confidential: true
